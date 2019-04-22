@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Category;
+use App\Http\Requests\Item\StoreRequest;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -15,7 +16,6 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::all();
-
         return view('categories.index', compact('categories'));
     }
 
@@ -26,7 +26,8 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('categories.create');
+        $categories = Category::all();
+        return view('categories.create',compact('categories'));
     }
 
     /**
@@ -73,7 +74,7 @@ class CategoryController extends Controller
      * @param Category $category
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Category $category)
+    public function update(StoreRequest $request, Category $category)
     {
         $category->update([
             'name' => $request->input('name'),

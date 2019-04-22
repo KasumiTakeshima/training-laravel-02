@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Item\StoreRequest;
 use App\Item;
+use App\Category;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
@@ -15,8 +17,7 @@ class ItemController extends Controller
     public function index()
     {
         $items = Item::all();
-
-        return view('items.index', compact('items'));
+        return view('items.index', compact('items')); //compactはこのviewで使えるようにするもの
     }
 
     /**
@@ -26,7 +27,10 @@ class ItemController extends Controller
      */
     public function create()
     {
-        return view('items.create');
+        $categories = Category::listOfOptions();
+
+        return view('items.create', compact('categories'));
+
     }
 
     /**
@@ -35,11 +39,18 @@ class ItemController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        Item::create([
+//        Item::create([
+//            'name' => $request->input('name'),
+//        ]);
+
+        $category = Category::find($request->input('category_id'));
+
+        $category->items()->create([
             'name' => $request->input('name'),
         ]);
+
 
         return redirect()->route('items.index');
     }
@@ -63,7 +74,10 @@ class ItemController extends Controller
      */
     public function edit(Item $item)
     {
-        return view('items.edit', compact('item'));
+        $categories = Category::listOfOptions();
+
+        return view('items.edit', compact('item', 'categories'));
+
     }
 
     /**
@@ -73,11 +87,31 @@ class ItemController extends Controller
      * @param Item $item
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Item $item)
+    public function update(StoreRequest $request, Item $item)
+        //requestは新たに送られてきたデータ（自分が今入力したもの）
+        ////itemはidで取れるデータ全部 ex.id,name,created_at...etc
     {
-        $item->update([
-            'name' => $request->input('name'),
+//        $item->update([
+//            'name' => $request->input('name'),
+//        ]);
+
+
+//        dd($item->name);
+//        dd($request->input('name'));
+        $request->validate([
+            'name' => 'required|max:3', //ここでは入力必須、10文字以下と指定
         ]);
+
+        $item->name = $request->input('name'); //送られてきたデータを$itemに上書きしてる
+
+//        dd($item->name);
+
+        $category = Category::find($request->input('category_id'));
+
+//        dd($category);
+
+        $category->items()->save($item); //ここはこうゆうものだと理解。 modelの所のfunction。
+
 
         return redirect()->route('items.index');
     }
