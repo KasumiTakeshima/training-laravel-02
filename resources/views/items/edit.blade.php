@@ -11,7 +11,7 @@
         </div>
     @endif
 
-    {{ Form::open(['route' => ['items.update', $item->id], 'method' => 'put']) }}
+    {{ Form::open(['route' => ['items.update', $item->id], 'method' => 'put', 'files' => true]) }}
     <div class="form-group">
         {{ Form::label('name', '商品名：') }}
         {{ Form::text('name', $item->name, ['class' => 'form-control']) }}
@@ -19,6 +19,12 @@
     <div class="form-group">
         {{ Form::label('category_id', 'カテゴリー：') }}
         {{ Form::select('category_id', $categories, $item->category->id, ['class' => 'form-control']) }}
+    </div>
+    @if ($image_url)
+        <p>画像：<img src ="/{{ $image_url }}"></p>
+    @endif
+    <div class="form-image_url">
+        <input type="file" name="image_url">
     </div>
     <div class="form-group">
         {{ Form::submit('更新', ['class' => 'btn btn-success form-control']) }}

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Item\StoreRequest;
-use App\Item;
 use App\Category;
-use Illuminate\Http\Request;
+use App\Http\Requests\Item\StoreRequest;
+use App\Http\Requests\Item\UpdateRequest;
+use App\Item;
 
 class ItemController extends Controller
 {
@@ -27,8 +27,8 @@ class ItemController extends Controller
      */
     public function create()
     {
-        $categories = Category::listOfOptions();
 
+        $categories = Category::listOfOptions();
         return view('items.create', compact('categories'));
 
     }
@@ -36,19 +36,16 @@ class ItemController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param StoreRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreRequest $request)
     {
-//        Item::create([
-//            'name' => $request->input('name'),
-//        ]);
-
+        $path = $request->image_url->store('public/storage'); //追加
         $category = Category::find($request->input('category_id'));
-
         $category->items()->create([
             'name' => $request->input('name'),
+            'image_url' => $path,
         ]);
 
 
@@ -63,7 +60,8 @@ class ItemController extends Controller
      */
     public function show(Item $item)
     {
-        return view('items.show', compact('item'));
+        return view('items.show', compact('item'),['image_url'=> str_replace('public/', 'storage/', $item->image_url)
+        ]);
     }
 
     /**
@@ -75,44 +73,25 @@ class ItemController extends Controller
     public function edit(Item $item)
     {
         $categories = Category::listOfOptions();
-
-        return view('items.edit', compact('item', 'categories'));
+        return view('items.edit', compact('item', 'categories'),['image_url'=> str_replace('public/', 'storage/', $item->image_url)
+        ]);
 
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
-     * @param Item $item
+     * @param StoreRequest $request
+     * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(StoreRequest $request, Item $item)
+    public function update(UpdateRequest $request, Item $item)
         //requestは新たに送られてきたデータ（自分が今入力したもの）
         ////itemはidで取れるデータ全部 ex.id,name,created_at...etc
     {
-//        $item->update([
-//            'name' => $request->input('name'),
-//        ]);
-
-
-//        dd($item->name);
-//        dd($request->input('name'));
-        $request->validate([
-            'name' => 'required|max:3', //ここでは入力必須、10文字以下と指定
-        ]);
-
         $item->name = $request->input('name'); //送られてきたデータを$itemに上書きしてる
-
-//        dd($item->name);
-
         $category = Category::find($request->input('category_id'));
-
-//        dd($category);
-
         $category->items()->save($item); //ここはこうゆうものだと理解。 modelの所のfunction。
-
-
         return redirect()->route('items.index');
     }
 

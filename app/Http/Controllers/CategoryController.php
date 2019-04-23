@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use App\Http\Requests\Item\StoreRequest;
+use App\Http\Requests\Item\UpdateRequest;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -36,7 +37,7 @@ class CategoryController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
         Category::create([
             'name' => $request->input('name'),
@@ -74,7 +75,7 @@ class CategoryController extends Controller
      * @param Category $category
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(StoreRequest $request, Category $category)
+    public function update(UpdateRequest $request, Category $category)
     {
         $category->update([
             'name' => $request->input('name'),

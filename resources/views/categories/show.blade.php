@@ -9,7 +9,7 @@
 
     このカテゴリーに属している商品：
     <ul>
-    @foreach($category->items as item)
+    @foreach($category->items as $item)
           <li>{{ link_to_route('items.show',$item->name,['item'=> $item->id])}}</li>
     @endforeach
     </ul>

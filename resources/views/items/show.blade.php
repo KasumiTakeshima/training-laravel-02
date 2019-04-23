@@ -6,4 +6,7 @@
     <p>カテゴリー：{{ link_to_route('categories.show',$item->category->name,['category'=> $item->category->id])}}</p>
     <p>登録日：{{ $item->created_at }}</p>
     <p>更新日：{{ $item->updated_at }}</p>
+    @if ($image_url)
+        <p>画像：<img src ="/{{ $image_url }}"></p>
+    @endif
 @endsection
