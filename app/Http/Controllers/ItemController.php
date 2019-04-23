@@ -16,7 +16,7 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $items = Item::all();
+        $items = Item::paginate(5);
         return view('items.index', compact('items')); //compactはこのviewで使えるようにするもの
     }
 
@@ -85,13 +85,20 @@ class ItemController extends Controller
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
      */
+
+
+
+
     public function update(UpdateRequest $request, Item $item)
         //requestは新たに送られてきたデータ（自分が今入力したもの）
         ////itemはidで取れるデータ全部 ex.id,name,created_at...etc
     {
+        $path = $request->image_url->store('public/storage'); //追加
         $item->name = $request->input('name'); //送られてきたデータを$itemに上書きしてる
+        $item->image_url = $path;
         $category = Category::find($request->input('category_id'));
         $category->items()->save($item); //ここはこうゆうものだと理解。 modelの所のfunction。
+
         return redirect()->route('items.index');
     }
 
